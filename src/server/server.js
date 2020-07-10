@@ -39,7 +39,7 @@ app.get('/getLang', (req, res) => {
       res.end(JSON.stringify(response.data.geonames[0]));
     })
     .catch(error => {
-      res.end(JSON.stringify({error: "There was some error"}));
+      res.end(JSON.stringify({error: "An error occured"}));
     })
 })
 
@@ -50,7 +50,7 @@ app.get('/getWeather', (req, res) => {
       res.end(JSON.stringify(response.data))
     })
     .catch(error => {
-      res.end(JSON.stringify({error: "There was some error"}));
+      res.end(JSON.stringify({error: "An error occured"}));
     })
 })
 
@@ -61,13 +61,13 @@ app.get('/getPics', (req, res) => {
       res.end(JSON.stringify(response.data.hits[0]));
     })
     .catch(error => {
-      res.end(JSON.stringify({error: "There was some error"}));
+      res.end(JSON.stringify({error: "An error has occured"}));
     })
 })
 
 //setting server
 app.listen(8082, () => {
-  console.log('Server running on port 8081');
+  console.log('Server running on port 8082');
 });
 
 module.exports = app;
