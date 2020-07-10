@@ -1,74 +1,73 @@
-// Require Express to run server and routes
+//config env
+const dotenv = require('dotenv');
+dotenv.config();
+
+//import modules
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const cors = require('cors');
+const axios = require('axios');
+const path = require('path');
+const { response } = require('express');
 
+//to remove regeneratorRuntime error in testing
+require('babel-polyfill');
 
-// use the express-static middleware
-app.use(express.static(__dirname + '/public'))
-
-// // define the first route
-// app.get("/", function (req, res) {
-//   res.send("<h1>Hello World!</h1>")
-// })
-
-// start the server listening for requests
-app.listen(process.env.PORT || 3000, 
-	() => console.log("Server is running..."));
-
-
-//Body-parser as middle-ware
-app.use(bodyParser.urlencoded({ extended: false }));
+//setting middleware
 app.use(bodyParser.json());
-
-// Cors for cross origin allowance
-const cors = require("cors");
 app.use(cors());
+app.use(express.static('dist'));
+app.use(bodyParser.urlencoded({extended: true,}));
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+//home route
+app.get('/', function(req, res){
+  res.sendFile(path.resolve('dist/index.html'))
+  })
 
-  // authorized headers for preflight requests
-  // https://developer.mozilla.org/en-US/docs/Glossary/preflight_request
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
+//server test
+app.get('/test', function(req, res){
+  res.json({
+    status: 200
+  })
+})
 
-  app.options('*', (req, res) => {
-      // allowed XHR methods  
-      res.header('Access-Control-Allow-Methods', 'GET, PATCH, PUT, POST, DELETE, OPTIONS');
-      res.send();
-  });
+//using geonames
+app.get('/getLang', (req, res) => {
+  const url = `http://api.geonames.org/searchJSON?maxRows=10&operator=OR&q=${req.query.city}&name=${req.query.city}&username=${process.env.USERNAME}`;
+    axios.get(url).then(response => {
+      res.end(JSON.stringify(response.data.geonames[0]));
+    })
+    .catch(error => {
+      res.end(JSON.stringify({error: "There was some error"}));
+    })
+})
+
+//using weatherbit api to get weather details of flight origin
+app.get('/getWeather', (req, res) => {
+  const url = `https://api.weatherbit.io/v2.0/current?lat=${req.query.lat}&long=${req.query.long}&key=${process.env.WEATHER_KEY}`;
+    axios.get(url).then(response =>{
+      res.end(JSON.stringify(response.data))
+    })
+    .catch(error => {
+      res.end(JSON.stringify({error: "There was some error"}));
+    })
+})
+
+//using pixabay to get images for the trip
+app.get('/getPics', (req, res) => {
+  const url = `https://pixabay.com/api/?key=${process.env.PIXABAY_KEY}&q=${req.query.q}&image_type=photo`;
+    axios.get(url).then(response =>{
+      res.end(JSON.stringify(response.data.hits[0]));
+    })
+    .catch(error => {
+      res.end(JSON.stringify({error: "There was some error"}));
+    })
+})
+
+//setting server
+app.listen(8082, () => {
+  console.log('Server running on port 8081');
 });
 
-//initialize the main project folder
-app.use(express.static("website"));
-
-//defining projectData to act as the app API endpoint
-const projectData = {};
-
-// get endpoints
-app.get('/', (req,res)=>{
-  res.sendFile(`./website/index.html`)
-});
-
-app.get('/entries', (req,res)=>{
-  res.send(projectData);
-  console.log(`Entry has been sent to the UI: `+ JSON.stringify({projectData}));
-});
-
-//post endpoints
-app.post("/newentry", addEntry);
-
-//def function to add a new entry
-function addEntry(req,res){
-  let newEntry = {
-    "temp": req.body.temp,
-    "postContent": req.body.content,
-    "date": req.body.date
-  };
-
-  Object.assign(projectData, newEntry)
-
-  console.log(`New entry has been added to the server: `+JSON.stringify({projectData}));
-  res.send(projectData)
-}
+module.exports = app;
