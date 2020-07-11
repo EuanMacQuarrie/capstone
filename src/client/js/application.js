@@ -99,7 +99,7 @@ if(start.length !== 0 && end.length !== 0 && destination.length !== 0 && (endDat
       document.getElementById('status').innerHTML = "";
     }, 2500)
   }
-}
+
 
 //populating the webpage with the user's entries
 export const updateUI = () => {

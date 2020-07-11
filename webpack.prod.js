@@ -7,7 +7,6 @@ const WorkboxPlguin = require('workbox-webpack-plugin');
 module.exports = {
     entry: '.src/client/index.js',
     mode: 'production',
-    prodServer: 8083,
     output: {
         libraryTarget: 'var',
         library: 'Client'

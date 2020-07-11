@@ -7,7 +7,6 @@ module.exports = {
     entry: '/src/client/index.js',
     mode: 'development',
     devtool: 'source-map',
-    devSever: 8082,
     stats: 'errors-only',
     output: {
         libraryTarget: 'var',
