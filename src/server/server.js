@@ -14,6 +14,13 @@ const { response } = require('express');
 //to remove regeneratorRuntime error in testing
 require('babel-polyfill');
 
+const chokidar = require('chokidar');
+ 
+// One-liner for current directory
+chokidar.watch('.').on('all', (event, path) => {
+  console.log(event, path);
+});
+
 //setting middleware
 app.use(bodyParser.json());
 app.use(cors());
