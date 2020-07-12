@@ -88,12 +88,12 @@ export const validateProcess = async () => {
 
 if(start.length !== 0 && end.length !== 0 && destination.length !== 0 && (endDate - startDate >= 0)){
     document.getElementById('form-submit').innerHTML = "Fetching data..."
-    await formHandler();
-    getRemainingDaysOfTrip();
-    getLengthOfTrip();
-    document.getElementById('form-submit').innerHTML = "Submit";
-    updateUI();
-  } else {
+    formHandler()
+    .then(getRemainingDaysOfTrip())
+    .then(getLengthOfTrip())
+    .then(document.getElementById('form-submit').innerHTML = "Submit")
+    .then(updateUI());
+  } else { 
     document.getElementById('status').innerHTML = "Please enter correct values";
     setTimeout(() => {
       document.getElementById('status').innerHTML = "";
